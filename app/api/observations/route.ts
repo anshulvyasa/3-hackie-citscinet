@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
     }
 
     const location = `POINT(${longitude} ${latitude})`;
-
+ 
     const insertData: any = {
       sighting_name,
       category,
@@ -102,11 +102,13 @@ export async function POST(request: NextRequest) {
       longitude,
       description,
       image_url,
-      user_id,
     };
+
 
     // 🧠 AI VALIDATION STEP
     const aiResult = await validateObservationWithAI(insertData);
+
+    console.log("Ai Resullt is ", aiResult)
 
     if (!aiResult.valid) {
       return NextResponse.json(

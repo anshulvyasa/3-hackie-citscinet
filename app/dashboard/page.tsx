@@ -58,6 +58,9 @@ export default function DashboardPage() {
   const [isDraftsOpen, setIsDraftsOpen] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [drafts, setDrafts] = useState<any[]>([]);
+  const [selectedObservation, setSelectedObservation] = useState<Observation | null>(null);
+
+
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -170,6 +173,7 @@ export default function DashboardPage() {
               <ObservationList
                 observations={observations}
                 onObservationClick={(obs) => {
+                  setSelectedObservation(obs);
                   toast({
                     title: obs.sighting_name,
                     description: `${obs.category} observation at ${obs.latitude.toFixed(
@@ -191,6 +195,7 @@ export default function DashboardPage() {
             <ObservationMap
               observations={observations}
               className="h-full w-full"
+              selectedObservation={selectedObservation}
             />
           )}
         </div>
