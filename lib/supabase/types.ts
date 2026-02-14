@@ -4,38 +4,41 @@ export type Json =
   | boolean
   | null
   | { [key: string]: Json | undefined }
-  | Json[];
+  | Json[]
 
-export interface Database {
+export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.1"
+  }
   public: {
     Tables: {
       observations: {
         Row: {
-          id: string;
-          created_at: string;
-          updated_at: string;
-          sighting_name: string;
-          category: 'Water' | 'Wildlife' | 'Air' | 'Plants';
-          location: string;
-          latitude: number;
-          longitude: number;
-          image_url: string | null;
-          description: string | null;
-          user_id: string | null;
-        };
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          latitude: number
+          location: unknown
+          longitude: number
+          sighting_name: string
+          updated_at: string
+        }
         Insert: {
-          id?: string;
-          created_at?: string;
-          updated_at?: string;
-          sighting_name: string;
-          category: 'Water' | 'Wildlife' | 'Air' | 'Plants';
-          location: string;
-          latitude: number;
-          longitude: number;
-          image_url?: string | null;
-          description?: string | null;
-          user_id?: string | null;
-        };
+          category: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          latitude: number
+          location: unknown
+          longitude: number
+          sighting_name: string
+          updated_at?: string
+        }
         Update: {
           id?: string;
           created_at?: string;
@@ -154,6 +157,18 @@ export interface Database {
     };
   };
 }
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
 
 export type Observation = Database['public']['Tables']['observations']['Row'];
 export type ObservationInsert =
