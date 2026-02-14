@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import 'leaflet/dist/leaflet.css';
+@import 'leaflet.markercluster/dist/MarkerCluster.css';
+@import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+
+@layer base {
+  :root {
+    --background: 140 20% 97%;
+    --foreground: 200 15% 20%;
+    --card: 0 0% 100%;
+    --card-foreground: 200 15% 20%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 200 15% 20%;
+    --primary: 145 30% 45%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 140 15% 92%;
+    --secondary-foreground: 200 15% 25%;
+    --muted: 140 15% 92%;
+    --muted-foreground: 200 10% 45%;
+    --accent: 145 25% 85%;
+    --accent-foreground: 200 15% 25%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 140 20% 85%;
+    --input: 140 20% 85%;
+    --ring: 145 30% 45%;
+    --chart-1: 145 50% 45%;
+    --chart-2: 200 60% 50%;
+    --chart-3: 170 55% 40%;
+    --chart-4: 30 70% 55%;
+    --chart-5: 280 50% 50%;
+    --radius: 0.5rem;
+  }
+  .dark {
+    --background: 200 20% 10%;
+    --foreground: 140 15% 95%;
+    --card: 200 15% 12%;
+    --card-foreground: 140 15% 95%;
+    --popover: 200 15% 12%;
+    --popover-foreground: 140 15% 95%;
+    --primary: 145 35% 55%;
+    --primary-foreground: 200 20% 10%;
+    --secondary: 200 15% 18%;
+    --secondary-foreground: 140 15% 95%;
+    --muted: 200 15% 18%;
+    --muted-foreground: 140 10% 65%;
+    --accent: 145 25% 25%;
+    --accent-foreground: 140 15% 95%;
+    --destructive: 0 60% 40%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 200 15% 20%;
+    --input: 200 15% 20%;
+    --ring: 145 35% 55%;
+    --chart-1: 145 50% 55%;
+    --chart-2: 200 60% 60%;
+    --chart-3: 170 55% 50%;
+    --chart-4: 30 70% 65%;
+    --chart-5: 280 50% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+.leaflet-container {
+  font-family: inherit;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 0.5rem;
+}
