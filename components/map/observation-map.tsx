@@ -1,11 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import {
+  MapContainer,
+  TileLayer,
+  useMap
+} from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet.markercluster';
 import type { Observation } from '@/lib/supabase/types';
 import { formatDistanceToNow } from 'date-fns';
+
+/* ---------- CATEGORY COLORS ---------- */
 
 const categoryColors = {
   Water: '#3b82f6',
@@ -16,6 +22,7 @@ const categoryColors = {
 
 function createCategoryIcon(category: string) {
   const color = categoryColors[category as keyof typeof categoryColors];
+
   return L.divIcon({
     className: 'custom-marker',
     html: `
@@ -32,7 +39,7 @@ function createCategoryIcon(category: string) {
         color: white;
         font-weight: bold;
         font-size: 16px;
-l̥      ">
+      ">
         ${category.charAt(0)}
       </div>
     `,
@@ -42,15 +49,31 @@ l̥      ">
   });
 }
 
-interface MarkerClusterGroupProps {
-  observations: Observation[];
-  onMarkerClick?: (observation: Observation) => void;
+/* ---------- ZOOM HANDLER COMPONENT ---------- */
+
+function ZoomToSelected({ selectedObservation }: { selectedObservation: Observation | null }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!selectedObservation) return;
+
+    map.setView(
+      [selectedObservation.latitude, selectedObservation.longitude],
+      15,
+      { animate: true }
+    );
+  }, [selectedObservation, map]);
+
+  return null;
 }
+
+/* ---------- MARKER CLUSTER ---------- */
 
 function MarkerClusterGroup({
   observations,
-  onMarkerClick,
-}: MarkerClusterGroupProps) {
+}: {
+  observations: Observation[];
+}) {
   const map = useMap();
 
   useEffect(() => {
@@ -63,44 +86,22 @@ function MarkerClusterGroup({
     });
 
     observations.forEach((obs) => {
-      const marker = L.marker([obs.latitude, obs.longitude], {
-        icon: createCategoryIcon(obs.category),
-      });
+      const marker = L.marker(
+        [obs.latitude, obs.longitude],
+        { icon: createCategoryIcon(obs.category) }
+      );
 
       marker.bindPopup(`
-        <div class="p-2 min-w-[200px]">
-          <h3 class="font-semibold text-base mb-1">${obs.sighting_name}</h3>
-          <p class="text-sm text-muted-foreground mb-2">
-            <span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium"
-                  style="background-color: ${
-                    categoryColors[obs.category as keyof typeof categoryColors]
-                  }20; color: ${
-        categoryColors[obs.category as keyof typeof categoryColors]
-      }">
-              ${obs.category}
-            </span>
-          </p>
-          ${
-            obs.description
-              ? `<p class="text-sm mb-2">${obs.description}</p>`
-              : ''
-          }
-          ${
-            obs.image_url
-              ? `<img src="${obs.image_url}" alt="${obs.sighting_name}" class="w-full h-32 object-cover rounded mb-2" />`
-              : ''
-          }
-          <p class="text-xs text-muted-foreground">
-            ${formatDistanceToNow(new Date(obs.created_at), {
-              addSuffix: true,
-            })}
+        <div style="min-width:200px">
+          <h3><strong>${obs.sighting_name}</strong></h3>
+          <p>${obs.category}</p>
+          ${obs.description ? `<p>${obs.description}</p>` : ''}
+          ${obs.image_url ? `<img src="${obs.image_url}" style="width:100%;height:120px;object-fit:cover;border-radius:6px;margin-top:6px;" />` : ''}
+          <p style="font-size:12px;margin-top:6px;">
+            ${formatDistanceToNow(new Date(obs.created_at), { addSuffix: true })}
           </p>
         </div>
       `);
-
-      if (onMarkerClick) {
-        marker.on('click', () => onMarkerClick(obs));
-      }
 
       markerClusterGroup.addLayer(marker);
     });
@@ -117,14 +118,16 @@ function MarkerClusterGroup({
     return () => {
       map.removeLayer(markerClusterGroup);
     };
-  }, [observations, map, onMarkerClick]);
+  }, [observations, map]);
 
   return null;
 }
 
+/* ---------- MAIN COMPONENT ---------- */
+
 interface ObservationMapProps {
   observations: Observation[];
-  onMarkerClick?: (observation: Observation) => void;
+  selectedObservation: Observation | null;
   center?: [number, number];
   zoom?: number;
   className?: string;
@@ -132,11 +135,12 @@ interface ObservationMapProps {
 
 export function ObservationMap({
   observations,
-  onMarkerClick,
+  selectedObservation,
   center = [37.7749, -122.4194],
   zoom = 12,
   className = '',
 }: ObservationMapProps) {
+
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -146,7 +150,7 @@ export function ObservationMap({
   if (!isMounted) {
     return (
       <div className={`${className} flex items-center justify-center bg-muted`}>
-        <p className="text-muted-foreground">Loading map...</p>
+        Loading map...
       </div>
     );
   }
@@ -156,16 +160,17 @@ export function ObservationMap({
       center={center}
       zoom={zoom}
       className={`${className} relative z-0`}
-      style={{ height: '100%', width: '100%', zIndex: 0 }}
+      style={{ height: '100%', width: '100%' }}
     >
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        attribution='&copy; OpenStreetMap contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <MarkerClusterGroup
-        observations={observations}
-        onMarkerClick={onMarkerClick}
-      />
+
+      {/* 🔥 THIS handles zoom */}
+      <ZoomToSelected selectedObservation={selectedObservation} />
+
+      <MarkerClusterGroup observations={observations} />
     </MapContainer>
   );
 }
