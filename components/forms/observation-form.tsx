@@ -17,6 +17,7 @@ import { MapPin, Upload, Loader2, Save } from 'lucide-react';
 import { saveDraft } from '@/lib/offline-storage';
 import { useToast } from '@/hooks/use-toast';
 import dynamic from 'next/dynamic';
+import { ImageUpload } from './image-upload';
 
 const LocationPicker = dynamic(() => import('./location-picker'), {
   ssr: false,
@@ -153,6 +154,16 @@ export function ObservationForm({
           toast({
             title: 'Location required',
             description: 'Please select a location on the map.',
+            variant: 'destructive',
+          });
+          return false;
+        }
+        return true;
+      case 3:
+        if (!formData.image_url) {
+          toast({
+            title: 'Image required',
+            description: 'Please upload an image of your observation before submitting.',
             variant: 'destructive',
           });
           return false;
@@ -336,34 +347,13 @@ export function ObservationForm({
       {step === 3 && (
         <Card>
           <CardHeader>
-            <CardTitle>Image Upload (Optional)</CardTitle>
-          </CardHeader>
+              <CardTitle>Image Upload (Required)</CardTitle>
+            </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="image_url">Image URL</Label>
-              <Input
-                id="image_url"
-                type="url"
-                placeholder="https://example.com/image.jpg"
-                value={formData.image_url}
-                onChange={(e) => updateFormData('image_url', e.target.value)}
-              />
-              <p className="text-sm text-muted-foreground">
-                Paste a URL to an image of your observation. Image upload to
-                cloud storage can be integrated with services like Cloudinary or
-                AWS S3.
-              </p>
-            </div>
-
-            {formData.image_url && (
-              <div className="rounded-md overflow-hidden border">
-                <img
-                  src={formData.image_url}
-                  alt="Preview"
-                  className="w-full h-48 object-cover"
-                />
-              </div>
-            )}
+            <ImageUpload
+              currentImage={formData.image_url}
+              onImageUrlChange={(url) => updateFormData('image_url', url)}
+            />
 
             <div className="flex gap-2 justify-between">
               <Button type="button" onClick={() => setStep(2)} variant="outline">
