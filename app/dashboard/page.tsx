@@ -8,7 +8,7 @@ import type { Observation } from '@/lib/supabase/types';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Leaf, Archive } from 'lucide-react';
+import { Plus, Leaf, Archive, User, FolderOpen } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -19,6 +19,7 @@ import {
 import { getDrafts, deleteDraft } from '@/lib/offline-storage';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import Link from 'next/link';
 
 const ObservationMap = dynamic(
   () => import('@/components/map/observation-map').then((mod) => mod.ObservationMap),
@@ -145,6 +146,18 @@ export default function DashboardPage() {
                   Drafts ({drafts.length})
                 </Button>
               )}
+              <Link href="/profile">
+                <Button variant="outline">
+                  <User className="mr-2 h-4 w-4" />
+                  Profile
+                </Button>
+              </Link>
+              <Link href="/projects">
+                <Button variant="outline">
+                  <FolderOpen className="mr-2 h-4 w-4" />
+                  Projects
+                </Button>
+              </Link>
               <Button onClick={() => setIsFormOpen(true)}>
                 <Plus className="mr-2 h-4 w-4" />
                 Log Sighting
