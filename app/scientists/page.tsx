@@ -29,20 +29,20 @@ export default function ScientistsPage() {
   useEffect(() => {
     const fetchScientists = async () => {
       try {
-        const { data, error: err } = await supabase
+        const { data, error: err } = (await supabase
           .from('scientists')
           .select('*')
-          .order('name', { ascending: true });
+          .order('name', { ascending: true })) as any;
 
         if (err) throw err;
 
         // Fetch project counts for each scientist
         const scientistsWithCounts = await Promise.all(
-          (data || []).map(async (scientist) => {
-            const { count, error: countError } = await supabase
+          (data || []).map(async (scientist: any) => {
+            const { count, error: countError } = (await supabase
               .from('projects')
               .select('id', { count: 'exact', head: true })
-              .eq('scientist_id', scientist.id);
+              .eq('scientist_id', scientist.id)) as any;
 
             return {
               ...scientist,
