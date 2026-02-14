@@ -59,6 +59,14 @@ export async function POST(request: NextRequest) {
       user_id,
     } = body;
 
+    console.log("sighting_name : ", sighting_name);
+    console.log("category      : ", category)
+    console.log("latitude      : ", latitude);
+    console.log("longitude     : ", longitude)
+    console.log("description   : ", description)
+    console.log("image_url     : ", image_url)
+    console.log("user_id       : ", user_id)
+
     if (
       !sighting_name ||
       !category ||
